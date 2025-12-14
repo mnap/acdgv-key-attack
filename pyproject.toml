@@ -1,0 +1,12 @@
+[project]
+name = "acdgv-key-attack"
+version = "1.0.0"
+description = "Code supplementing the paper 'Key Attack on the ACDGV Matrix Encryption Scheme'"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "galois>=0.4.4",
+    "numpy>2.1",
+]
+[tool.uv]
+constraint-dependencies = ["numba>0.59"]
