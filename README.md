@@ -2,13 +2,13 @@
 
 ## Overview
 
-Main paper: "Key Attack on the ACDGV Matrix Encryption Scheme"
+Main Paper: "Key Attack on the ACDGV Matrix Encryption Scheme".
 
 This repository contains code to:
-- Test 1: Run a proof-of-concept of the attack (see docstring in `m1_new_attack.py`)
-- Test 2: Verify Assumption 1
-- Test 3: Verify Assumption 2  
-- Compute complexity expressions to reproduce Table 3 in paper
+- Test 1: Run a proof-of-concept of the attack (see docstring in `m1_new_attack.py`).
+- Test 2: Verify Assumption 1.
+- Test 3: Verify Assumption 2.
+- Compute complexity expressions to reproduce Table 3 in paper.
 
 Two scripts can be run directly:
 
@@ -21,7 +21,7 @@ Computes complexity expressions for all ACDGV parameter sets.
 ## Installation
 ```bash
 git clone https://github.com/mnap/acdgv-key-attack.git
-cd your-repo
+cd acdgv-key-attack
 # Recommended: Install with uv (uses locked dependency versions for reproducibility)
 uv sync
 # Alternative: Install with pip
