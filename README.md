@@ -13,7 +13,7 @@ This repository contains code to:
 Two scripts can be run directly:
 
 **`run_tests.py`**
-Runs the proof-of-concept attack and verifies Assumptions 1 and 2 using default parameters from parameters.py. The script is easily modifiable, and the values of SEED and ITERATIONS can be set there.
+Runs the proof-of-concept attack and verifies Assumptions 1 and 2 using default parameters from `parameters.py`. The script is easily modifiable, and the values of SEED and ITERATIONS can be set there.
 
 **`compute_complexity.py`**
 Computes complexity expressions for all ACDGV parameter sets.
@@ -41,4 +41,3 @@ python compute_complexity.py
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-```
