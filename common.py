@@ -155,10 +155,12 @@ def get_b1_b2(k, m, n, ell1, ell2):
     """Pick the interal parameters (b1, b2) as required by the new key recovery algorithm."""
     min_cost = float("inf")
     best_b1, best_b2 = None, None
-    for b1 in range(1, m + 1):
-        min_b2 = ceil((k * m) / b1 + (m + ell1) / (k * m))
+    e1 = ell2/(k*m)
+    e2 = (m+ell1)/(k*m)
+    for b1 in range(max(ceil(e1), 1), m + 1):
+        min_b2 = ceil(e2)
         for b2 in range(min_b2, n + 1):
-            if b1 * (b2 - (m + ell1) / (k * m)) >= k * m:
+            if b1 * (b2 - (m + ell1) / (k * m)) >= k * m - 1/k + 1/(k*m):
                 cost = b1 * ell1 + b2 * ell2
                 if cost < min_cost:
                     min_cost = cost
