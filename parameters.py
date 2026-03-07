@@ -5,6 +5,7 @@ PARAMS = [
     SimpleNamespace(group="small", q=3, k=4, m=7, n=7, ell1=2, ell2=2),
     SimpleNamespace(group="small", q=5, k=4, m=7, n=6, ell1=3, ell2=4),
 
+    # proposed parameters from ACDGV paper (https://arxiv.org/abs/2405.16539)
     SimpleNamespace(group="acdgv_fig5", q=2, k=17, m=37, ell1=3, ell2=3, r=10, design=128),
     SimpleNamespace(group="acdgv_fig5", q=2, k=25, m=37, ell1=3, ell2=3, r= 6, design=128),
     SimpleNamespace(group="acdgv_fig5", q=2, k=35, m=43, ell1=2, ell2=2, r= 4, design=128),

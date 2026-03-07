@@ -97,7 +97,8 @@ def helper_asm1_find_rank(U1, U1_A_U2_list, AR_U2_list, m, ell1, K, b1, b2):
 def helper_asm1_find_rank_optimized(U1_A_U2_list, AR_U2_list, m, ell1, K, b1, b2):
     r"""Same behaviour as the non-optimized version but uses some tricks to speed things up:
     1. Considers U1*J as a new unknown instead of J.
-    2. The vectorized system of assumption 1 looks like (see also Lemma 6 in Appendix E of paper):
+    2. The vectorized system of assumption 1 looks like
+       (see also the Appendix on computing polynomial costs in the full version of paper):
                [L          S_1   ]
        Z =     [  L        S_2   ]
                [    ...
