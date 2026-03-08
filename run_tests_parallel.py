@@ -113,7 +113,7 @@ if __name__ == "__main__":
     seed_rng = random.Random(BASE_SEED)
     all_seeds = [seed_rng.randint(0, 2**31 - 1) for _ in range(total_tests)]
 
-    # Optional: add a short header to outputs for provenance
+    # Optional: add a short header to outputs
     header = f"# base_seed={BASE_SEED}; iterations={ITERATIONS}; workers={workers}; timestamp={timestamp_str}"
     if "m2" in tests:
         with open(outputfile_m2, "a", encoding="utf-8") as f:

@@ -10,18 +10,18 @@ def set_global_rng(seed):
     global_rng = np.random.default_rng(seed)
 
 
-def get_random_vector(Fqm, n):
-    """Return random length-n vector over Fqm."""
-    return Fqm.Random(n, seed=global_rng)
+def get_random_vector(F, n):
+    """Return random length-n vector over the field F."""
+    return F.Random(n, seed=global_rng)
 
 
-def get_random_full_rank_matrix(Fqm, a, b):
-    """Return a random a x b matrix of full rank over Fqm.
+def get_random_full_rank_matrix(F, a, b):
+    """Return a random a x b matrix of full rank over the field F.
 
     Uses rejection sampling, so is quite slow.
     """
     while True:
-        matrix = Fqm.Random((a, b), seed=global_rng)
+        matrix = F.Random((a, b), seed=global_rng)
         if np.linalg.matrix_rank(matrix) == min(a, b):
             return matrix
 
