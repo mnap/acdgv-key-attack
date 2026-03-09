@@ -9,7 +9,7 @@ This repository contains code to:
 - Compute complexity expressions to reproduce Table 3 in the paper (`compute_complexity.py`).
 
 Notes:
-- The code only supports extension fields with prime base fields (e.g., GF(q^m) with q=16 is not supported).
+- The code only supports extension fields whose base field has prime order. Consequently, parameter sets with q not prime (e.g., q=16) are not supported.
 - Test 1 is implemented without optimizations for easier verifiability, and is only suitable for small parameter sets.
 
 Three scripts can be run directly:

@@ -67,8 +67,8 @@ def run(q, m, n, k, ell1, b1, b2, code_family, optimize, seed):
 
 def helper_asm1_find_rank(U1, U1_A_U2_list, AR_U2_list, m, ell1, K, b1, b2):
     r"""Solves the system
-    U1*J*[A_i // R_s]*U2 - \sum_i mu_{i,s}*U1*A_i*U2 = 0 for s = 1, ..., km
-    for unknowns J \in \Fq^{m \times (m+ell1)} and mu_{i,s} by vectorizing it using the Kronecker
+    U1*J*[A_s // R_s]*U2 - \sum_i mu_{s,i}*U1*A_i*U2 = 0 for s = 1, ..., km
+    for unknowns J \in \Fq^{m \times (m+ell1)} and mu_{s,i} by vectorizing it using the Kronecker
     product (see definition of get_AXB). Here U1 has size b1 x m, [A_i // R_s] has size (m+ell1) x
     n, U2 has size n x b2 and A_i has size m x n. Returns True if the dimension of the solution
     space matches Assumption 1.
@@ -125,7 +125,7 @@ def helper_asm1_find_rank_optimized(U1_A_U2_list, AR_U2_list, m, ell1, K, b1, b2
     the unknown and not U1*J as we are doing here). In fact, we know that it provably has nullity at
     least m (see paper), so we only need to check if nullity(Z) is at most m. This also means
     nullity(E) is at most m. This means rank(E) is at least b1(m+ell1) - m. Thus if we determine
-    that only a subset of rows of E has sufficient rank then we can stopy early.
+    that only a subset of rows of E has sufficient rank then we can stop early.
     """
     K, b1, b2 = U1_A_U2_list.shape
     Fq = U1_A_U2_list.__class__

@@ -57,10 +57,10 @@ def get_matrix_code_expanded_using_power_basis_of_Fqm(G, random_basis=False):
 
     The return value is a list of km matrices with each matrix of size m x n. If random_basis=False,
     then, if g_i is the ith row of G, the list of matrices obtained is: ext(g_1), ext(alpha*g_1),
-    ..., alpha^{m-1}*g_1, ext(g_2), ext(alpha*g_2), ..., alpha^{m-1}*g_k where ext(.) returns the m
-    x n matrix over Fq obtained by expanding its input n-length vector using the basis (1, alpha,
-    alpha^2, ..., alpha^{m-1}). Note this is not a random basis of the corresponding matrix code. To
-    get a random basis, do random_basis=True.
+    ..., ext(alpha^{m-1}*g_1), ext(g_2), ext(alpha*g_2), ..., ext(alpha^{m-1}*g_k), where ext(.)
+    returns the m x n matrix over Fq obtained by expanding its input n-length vector using the
+    basis (1, alpha, alpha^2, ..., alpha^{m-1}). Note this is not a random basis of the
+    corresponding matrix code. To get a random basis, do random_basis=True.
     """
     Fqm = G.__class__
     Fq = Fqm.prime_subfield
@@ -115,7 +115,7 @@ def add_random_rows_columns(A_list, ell1, ell2):
 def left_multiply_matrix_basis(Y, A_list):
     """Return list of matrices B_list where the ith matrix B_list[i] = Y*A_list[i].
 
-    The input A_list is a list of matrices of shape (K, m, n) and Y is a matrix of shape (m, n).
+    The input A_list is a list of matrices of shape (K, m, n) and Y is a matrix of shape (m, m).
     """
     Fq = Y.__class__
     q = Fq.order
@@ -152,7 +152,7 @@ def do_linear_comb_matrices(M_list, X):
 
 
 def get_b1_b2(k, m, n, ell1, ell2):
-    """Pick the interal parameters (b1, b2) as required by the new key recovery algorithm."""
+    """Pick the internal parameters (b1, b2) as required by the new key recovery algorithm."""
     min_cost = float("inf")
     best_b1, best_b2 = None, None
     e1 = ell2/(k*m)

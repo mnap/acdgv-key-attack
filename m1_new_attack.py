@@ -22,8 +22,8 @@ def run(q, m, n, k, ell1, ell2, code_family, seed, suppress_output=False, draw_r
     parameters. The upside is that the code is easier to verify for correctness.
 
     If code_family="RANDOM" (resp. "GABIDULIN") then a random F_{q^m}-linear (Gabidulin) code is
-    used. If draw_random_VW = True, then V and W are drawn randomly. Hence this will almost
-    certainly fail unless the paramters are very small or if this function is called many many many
+    used. If draw_random_VW=True, then V and W are drawn randomly. Hence this will almost
+    certainly fail unless the parameters are very small or this function is called many many many
     times. If suppress_output=True, then do not print anything. The seed argument is for
     reproducibility.
     """
