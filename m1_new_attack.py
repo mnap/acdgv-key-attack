@@ -31,7 +31,7 @@ def run(q, m, n, k, ell1, ell2, code_family, seed, suppress_output=False, draw_r
     K = k*m
     Fqm = galois.GF(q, m)
     Fq = Fqm.prime_subfield
-    # use b1, b2 as specified in the new recovery algorithm
+    # use b1 and b2 as specified in the new recovery algorithm
     b1, b2 = get_b1_b2(k=k, m=m, n=n, ell1=ell1, ell2=ell2)
 
     # get a basis A_list of Cmat and then derive a basis B_list of Cpub
@@ -61,7 +61,7 @@ def run(q, m, n, k, ell1, ell2, code_family, seed, suppress_output=False, draw_r
         W = W_true @ get_random_full_rank_matrix(Fq, n, b2)
 
     # set up the MinRank-like equation and solve it:
-    # FB_s - \sum muis B_i = 0 for s = 1,...,K
+    # F B_s - \sum_i mu_{s,i} B_i = 0 for s = 1, ..., K
     VtBiW_list = Fq.Zeros((K, b1, b2))
     for i in range(K): VtBiW_list[i] = V.T @ B_list[i] @ W
     E = Fq.Zeros((K*b1*b2, (m+ell1)**2 + K*K))
@@ -106,39 +106,39 @@ def run(q, m, n, k, ell1, ell2, code_family, seed, suppress_output=False, draw_r
     if not suppress_output: print("Removing random columns step done.")
 
     # remove random rows
-    # again 20 is arbitrary; we expect we only need on iteration
+    # again, 20 is arbitrary; with high probability we expect far fewer iterations
     for _ in range(20):
         _, mu = draw_random_F_mu_from_solution_space(Fq=Fq, NS=NS, K=K, m=m, ell1=ell1)
-        # Solve F'*Bs = [I F'] M sum_i (mu_{i,s}*B_i) for all s
-        # Note H_s := M sum_i (mu_{i,s}*B_i) is known after we pick M
+        # solve F'*B_s = [I F''] M sum_i (mu_{s,i}*B_i) for all s
+        # note H_s := M sum_i (mu_{s,i}*B_i) is known after we pick M
         # so this is equivalent to solving
         #     F'*Bs - [I F''] H_s = 0 for all s
         #  or F'*Bs - H1_s - F''*H2_s = 0 for all s
         # where we split H_s into two matrices with its first m rows and remaining rows respectively
-        # Note H1_s is completely known. We make this system homogeneous by scaling it with an
+        # note H1_s is completely known. We make this system homogeneous by scaling it with an
         # unknown scalar lambda:
         #    F'*Bs - lambda*H1_s - F''*H2_s = 0 for all s
         # After solving this we can pick any solution with lambda != 0.
         E = Fq.Zeros((K*m*n, m*(m+ell1) + m*ell1 + 1))
-        last = 0 # index of last filled row of E
+        last = 0 # index of the last filled row of E
         M = get_random_full_rank_matrix(Fq, m+ell1, m+ell1)
         for s in range(K):
             sum_mu_Bi = Fq.Zeros(B_listp[0].shape)
             for i in range(B_list.shape[0]): sum_mu_Bi += mu[s][i]*B_listp[i]
-            H = M @ sum_mu_Bi # apply random invertible matrix
+            H = M @ sum_mu_Bi # apply a random invertible matrix
             H1 = H[:m,:] # first m rows of H
             H2 = H[m:,:] # remaining rows of H
             # B is such that B*vec(F') = vec(F'*B_s)
             B = get_AXB(Fq.Identity(m), B_listp[s])
             # C is such that C*vec(F'') = vec(F''*H2_s)
             C = get_AXB(Fq.Identity(m), H2)
-            # D*[vec(F') vec(F'') lambda]^T = vec(F'*Bs - F''*H2_s - lambda*H1_s)
+            # D*[vec(F') vec(F'') lambda]^T = vec(F'*B_s - F''*H2_s - lambda*H1_s)
             D = np.hstack((B, -C, -H1.ravel().reshape(-1, 1))).row_space()
             E[last:last+D.shape[0],:] = D
             last = last + D.shape[0]
             rank = np.linalg.matrix_rank(E)
             nullity = E.shape[1] - rank
-            # stop early if we already have a solution space of dimension 1
+            # stop early if we already have a one-dimensional solution space
             if nullity == 1:
                 break
         if nullity == 1:
@@ -147,7 +147,7 @@ def run(q, m, n, k, ell1, ell2, code_family, seed, suppress_output=False, draw_r
         return False # failure
     NS = E.null_space()
     assert NS.shape[0] == 1
-    NS = NS[0] # so that it has shape (x,) and not (1,x)
+    NS = NS[0] # so that it has shape (x,) rather than (1, x)
     assert NS[-1] != 0 # lambda should not be zero
     Fp = NS[:m*(m+ell1)].reshape((m, m+ell1)) # obtain Fp
     Fp = Fp.row_reduce()
@@ -159,7 +159,7 @@ def run(q, m, n, k, ell1, ell2, code_family, seed, suppress_output=False, draw_r
         B_listpp[i] = Fp @ B_listp[i]
     if not suppress_output: print("Removing random rows step done.")
 
-    # Now we show there exist two matrices S1 and S2 such that
+    # now we show that there exist two matrices S1 and S2 such that
     #     B_listpp[i] = S1 * A_list[i] * S2
     # where recall A_list is the basis of the secret matrix code Cmat
     S1 = (Fp @ P)[:,:m]
@@ -180,7 +180,7 @@ def draw_random_F_mu_from_solution_space(Fq, NS, K, m, ell1):
         r = Fq.Random(NS.shape[0]) @ NS
         mu = r[: K * K].reshape((K, K))  # mu_{s,i} = mu[s][i]
         F = r[K * K :].reshape(((m + ell1), (m + ell1)))
-        # If mu is a diagonal matrix then the underlying T in F is actually a scalar matrix which is
+        # if mu is a diagonal matrix then the underlying T in F is actually a scalar matrix, which is
         # not useful. (Checking if mu is not a scalar matrix would also have been sufficient.)
         if not is_diagonal(mu):
             return F, mu

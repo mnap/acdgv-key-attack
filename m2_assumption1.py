@@ -32,7 +32,7 @@ def run(q, m, n, k, ell1, b1, b2, code_family, optimize, seed):
     else:
         raise ValueError("code_family should either be GABIDULIN or RANDOM.")
 
-    # One can show that Assumption 1 does not depend on the which basis of Fqm over Fq is used to
+    # one can show that Assumption 1 does not depend on which basis of Fqm over Fq is used to
     # obtain the matrix code Cmat, nor does it depend on which km-length basis we pick for Cmat.
     # Thus, when optimize=True, we skip randomizing these things.
     if not optimize:
@@ -46,13 +46,13 @@ def run(q, m, n, k, ell1, b1, b2, code_family, optimize, seed):
         if code_family == "GABIDULIN":
             A_list = get_matrix_code_expanded_using_power_basis_of_Fqm(G_Cvec, random_basis=True) # shape (km, m, n)
 
-    # AR_list[i] = [A_i // R_i] \in \Fq^{(m+ell1) x m}
+    # AR_list[i] = [A_i // R_i] \in \Fq^{(m+ell1) x n}
     AR_list = add_random_rows_columns(A_list, ell1, 0)  # shape (km, m+ell1, n)
     U1 = get_random_full_rank_matrix(Fq, b1, m)
     U2 = get_random_full_rank_matrix(Fq, n, b2)
 
-    # AR_U2_list[i] = [A_i // R_i]*U2
-    # AR_list[i] = [A_i // R_i]*U2
+    # AR_U2_list[i] = [A_i // R_i] * U2
+    # U1_A_U2_list[i] = U1 * A_i * U2
     AR_U2_list = Fq.Zeros((K, m+ell1, b2))
     U1_A_U2_list = Fq.Zeros((K, b1, b2))
     for i in range(K): AR_U2_list[i] = AR_list[i] @ U2
@@ -97,20 +97,20 @@ def helper_asm1_find_rank(U1, U1_A_U2_list, AR_U2_list, m, ell1, K, b1, b2):
 def helper_asm1_find_rank_optimized(U1_A_U2_list, AR_U2_list, m, ell1, K, b1, b2):
     r"""Same behaviour as the non-optimized version but uses some tricks to speed things up:
     1. Considers U1*J as a new unknown instead of J.
-    2. The vectorized system of assumption 1 looks like
-       (see also the Appendix on computing polynomial costs in the full version of paper):
+    2. The vectorized system of Assumption 1 looks like
+       (see also the appendix on computing polynomial costs in the full version of the paper):
                [L          S_1   ]
        Z =     [  L        S_2   ]
                [    ...
                [        L  S_{km}]
        where L = [vec(U1*A_1*U2) ... vec(U1*A_{km}*U2)] \in Fq^{b1*b2 x km}
        and S_i = kronecker_product(I_b1, [A_i // R_i]*U2) \in Fq^{b1*b2 x (m+ell1)*b1}
-    Thus to find the rank of Z, one first row reduces L in each (block) row of Z.
+    Thus, to find the rank of Z, one first row-reduces L in each block row of Z.
     If the rank of L is r, then the rank of Z is kmr + r' where r' is the rank
     of the matrix obtained by restricting Z to only those rows where ref(L) is zero. Note that
     these rows only have non-zero entries in the last columns corresponding to the positions of
     S_i's. Further, we can obtain these rows by multiplying a basis of the left null space
-    of L with S_i. Stacking the results for all i vertically we obtain the (tall) matrix E (of size
+    of L with S_i. Stacking the results for all i vertically, we obtain the tall matrix E (of size
     wkm x b1*(m+ell1) where w is the dimension of the left null space of L). We then find the rank
     of E.
     3. The computation of [matrix whose rows span the left null space of L]*S_i can be done

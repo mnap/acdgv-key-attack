@@ -33,27 +33,27 @@ def run(q, m, n, k, ell1, code_family, optimize, seed):
     else:
         raise ValueError("code_family should be either GABIDULIN or RANDOM.")
 
-    # Get basis of Cmat by expanding the Fqm-linear code spanned by the generator matrix G_Cvec.
+    # Get a basis of Cmat by expanding the Fqm-linear code spanned by the generator matrix G_Cvec
     # The matrix basis has a specific order (see its docstring) and the expansion is done using a
     # "power basis" of Fqm.
     A_list = get_matrix_code_expanded_using_power_basis_of_Fqm(G_Cvec) # shape (km, m, n)
 
-    # The following constructs musi such that \sum_i musi[s][i]*A_list[i] = T*A_list[i] is the
-    # matrix representation of multiplying b with the codeword in Cvec corresponding to the matrix
-    # A_list[s]. This makes use of the fact that get_matrix_code_expanded_using_power_basis_of_Fqm
+    # The following constructs musi such that \sum_i musi[s][i]*A_list[i] = T*A_list[s], where T is
+    # the matrix representation of multiplication by b on the codeword in Cvec corresponding to the
+    # matrix A_list[s]. This uses the fact that get_matrix_code_expanded_using_power_basis_of_Fqm
     # returns a specific ordered basis of the matrix code (see its docstring).
-    # Note if dim Stab(Cvec) = m, then drawing a T uniformly that is not a scalar matrix and
-    # that satisfies \sum_i musi[s][i]*A_list[i] = T*A_list[i] for all s
+    # Note if dim Stab(Cvec) = m, then drawing T uniformly among the non-scalar matrices
+    # that satisfy \sum_i musi[s][i]*A_list[i] = T*A_list[s] for all s
     # is equivalent to uniformly drawing a b \in F_{q^m} not in F_q.
     alpha = Fqm("x")
     while True:
         b = get_random_vector(Fqm, 1)[0]
         if b**q - b != 0:
-            break # check b not in subfield
+            break # check that b is not in the subfield
     musi = Fq.Zeros((K, K))
     for s1 in range(k):
         for s2 in range (m):
-            # (alpha^i).vector() equals [0 0 0 ... 1 ... 0] where 1 is at position (m-i).
+            # (alpha^i).vector() equals [0 0 0 ... 1 ... 0], where 1 is at position (m-i)
             # For example, alpha.vector() = [0 0 0 ... 1 0].
             # [::-1] reverses the vector.
             musi[s1*m+s2, s1*m:(s1+1)*m] = (b*(alpha**s2)).vector()[::-1]
@@ -70,19 +70,19 @@ def run(q, m, n, k, ell1, code_family, optimize, seed):
     AR_list = add_random_rows_columns(A_list, ell1, 0)  # shape (km, m+ell1, n)
     AR_list_RHS = do_linear_comb_matrices(AR_list, musi)
 
-    # Note Assumption 2 is true iff the system
-    # [J1 J2] [As // Rs] = [K1 K2]\sum_i \mu_{is}*[Ai // Ri] for all s
+    # note that Assumption 2 is true iff the system
+    # [J1 J2] [A_s // R_s] = [K1 K2] \sum_i \mu_{s,i}*[A_i // R_i] for all s
     # for unknowns [J1 J2] and [K1 K2] only has solutions J2 = K2 = 0 (so that J1 = K1*T).
     # (Here // denotes concatenating vertically, i.e., one below the other.)
-    # This is true iff the solution space at most dimension m^2 since the solutions J2 = K2 = 0 and
+    # this is true iff the solution space has at most dimension m^2, since the solutions J2 = K2 = 0 and
     # J1 = K1*T are provably in the solution space and are also of dimension m^2.
     # Now the system is equivalent to
-    # [J1 K1 // J2 K2] [As // Rs // AAs // RRs] = 0 for all s
-    # where we let [AAs // RRs] := \sum_i \mu_{is}*[Ai // Ri] (in our code this is AR_list_RHS[s])
+    # [J1 K1 // J2 K2] [A_s // R_s // AA_s // RR_s] = 0 for all s
+    # where we let [AA_s // RR_s] := \sum_i \mu_{s,i}*[A_i // R_i] (in our code this is AR_list_RHS[s])
     # Note that the solution space of the above is m times the solution space of the below system
-    #   x [As // Rs // AAs // RRs] = 0 for all s
+    #   x [A_s // R_s // AA_s // RR_s] = 0 for all s
     # where the unknown x is just a row vector. Thus we need to check if the dimension of the left
-    # null space of the matrix obtained by horizontally stacking [As // Rs // AAs // RRs] for s = 1,
+    # null space of the matrix obtained by horizontally stacking [A_s // R_s // AA_s // RR_s] for s = 1,
     # ..., km equals m.
     # Finally, since we only need to check that the dimension is at most m, we only need to check if
     # its rank is at least (rows in the big horizontally stacked matrix) - m. Thus, the optimized
