@@ -3,13 +3,13 @@
 Main Paper: **Key Attack on the ACDGV Matrix Encryption Scheme** by *Anmoal Porwal, Antonia Wachter-Zeh, and Pierre Loidreau* (Full version: https://eprint.iacr.org/2025/1292).
 
 This repository contains code to:
-- Test 1: Run a proof-of-concept of the attack (see docstring in `m1_new_attack.py`).
+- Test 1: Run a proof-of-concept of the key-recovery attack and check whether the derived matrix code is equivalent to the secret matrix code (`m1_new_attack.py`).
 - Test 2: Verify Assumption 1 (`m2_assumption1.py`).
 - Test 3: Verify Assumption 2 (`m3_assumption2.py`).
 - Compute complexity expressions to reproduce Table 3 in the paper (`compute_complexity.py`).
 
 Notes:
-- The code only supports extension fields whose base field has prime order. Consequently, parameter sets with q not prime (e.g., q=16) are not supported.
+- The code only supports extension fields with prime base fields (e.g., GF(q^m) with q=16 is not supported).
 - Test 1 is implemented without optimizations for easier verifiability, and is only suitable for small parameter sets.
 
 Three scripts can be run directly:
