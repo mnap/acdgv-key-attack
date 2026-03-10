@@ -45,6 +45,8 @@ def run(q, m, n, k, ell1, b1, b2, code_family, optimize, seed):
         # Hence, we randomize the basis even when optimize=True.
         if code_family == "GABIDULIN":
             A_list = get_matrix_code_expanded_using_power_basis_of_Fqm(G_Cvec, random_basis=True) # shape (km, m, n)
+        else:
+            A_list = get_matrix_code_expanded_using_power_basis_of_Fqm(G_Cvec, random_basis=False) # shape (km, m, n)
 
     # AR_list[i] = [A_i // R_i] \in \Fq^{(m+ell1) x n}
     AR_list = add_random_rows_columns(A_list, ell1, 0)  # shape (km, m+ell1, n)

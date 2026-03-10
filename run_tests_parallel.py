@@ -67,7 +67,12 @@ def parse_args():
                         -1=all cores, 0=half cores (default), N=exact.")
     parser.add_argument("--tests", nargs="+", choices=("m2", "m3"), default=["m2", "m3"],
                         help="Which tests to run (default: %(default)s)",)
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.iterations < 1:
+        parser.error("--iterations must be at least 1")
+    if args.workers < -1:
+        parser.error("--workers must be -1, 0, or a positive integer")
+    return args
 
 
 if __name__ == "__main__":
@@ -83,7 +88,9 @@ if __name__ == "__main__":
     elif args.workers == 0:
         workers = half_cores
     else:
-        workers = max(1, args.workers)
+        if args.workers < 1:
+            raise ValueError("--workers must be -1, 0, or a positive integer")
+        workers = args.workers
 
     timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     outputfile_m2 = f"benchmark_m2_results_{timestamp_str}.txt"

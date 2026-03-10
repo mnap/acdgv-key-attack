@@ -105,9 +105,9 @@ def run(q, m, n, k, ell1, code_family, optimize, seed):
             E[:, s*n:(s+1)*n] = C
             if (s+1)*n >= 2*(m+ell1) - m:
                 rank = np.linalg.matrix_rank(E)
-                if rank <= E.shape[0] - expected_left_nullity:
+                if rank >= E.shape[0] - expected_left_nullity:
                     break
                 # else append zero columns to E so we can do one more iteration
-                E = np.vstack((E, Fq.Zeros((E.shape[0], n))))
+                E = np.hstack((E, Fq.Zeros((E.shape[0], n))))
         left_nullity = E.shape[0] - rank
         return left_nullity == expected_left_nullity

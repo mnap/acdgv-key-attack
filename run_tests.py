@@ -56,7 +56,7 @@ if __name__ == "__main__":
                 success = m1_new_attack.run(**pp)
                 elapsed = time.perf_counter() - start
                 print("result=",
-                    dict(test='m2', iteration=iteration, success=success, elapsed=elapsed),
+                    dict(test='m1', iteration=iteration, success=success, elapsed=elapsed),
                     sep="")
                 print()
 
