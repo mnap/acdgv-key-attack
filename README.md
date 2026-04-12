@@ -17,14 +17,28 @@ Three scripts can be run directly:
 - **`run_tests_parallel.py`**: parallel runner for tests 2 and 3; suitable for large iteration counts; writes `key=value; ...` lines to timestamped output files.
 - **`compute_complexity.py`**: computes complexity expressions for all ACDGV parameter sets (Table 3).
 
-## Installation and Usage
+## Installation
 ```bash
-# installation
 git clone https://github.com/mnap/acdgv-key-attack.git
 cd acdgv-key-attack
+```
+With `uv` (tested with version 0.6.6):
+```bash
 uv sync --locked
+```
 
-# usage
+(Alternative) With Docker:
+```bash
+docker build -t acdgv-key-attack-image .
+docker run --rm -it --mount type=bind,source="$(pwd)",target=/workspace acdgv-key-attack-image
+```
+The Dockerfile and `docker-entrypoint.sh` were kindly provided by a reviewer and adapted slightly.
+If you want to set up the Python environment manually, then the required dependencies are listed in `pyproject.toml`.
+
+## Usage
+If you installed using Docker, replace `uv run python` below with `python`.
+
+```bash
 uv run python run_tests.py --seed 5 --iterations 2 --tests m1 m2 m3 # default
 uv run python run_tests.py # same as above
 uv run python run_tests.py --tests m1 # run only test 1
@@ -41,10 +55,6 @@ uv run python compute_complexity.py # compute complexity expressions (Table 3)
 uv run python run_tests_parallel.py --workers -1
 printf "success rate: %s/%s\n" $(grep -o "success=True" benchmark*.txt | wc -l) $(grep -o "success=" benchmark*.txt | wc -l)
 ```
-
-## Requirements
-- Python >= 3.13
-- Dependencies listed in `pyproject.toml`
 
 ## License
 This project is licensed under the MIT License.
