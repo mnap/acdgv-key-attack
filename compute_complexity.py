@@ -34,6 +34,9 @@ def compute_row_data(p):
     vals_pol = [cmp_new_poly, cmp_naive_dstg_poly, cmp_naive_srch_poly]
     vals = [x + y for x, y in zip(vals_exp, vals_pol)]
 
+    # note the Niederreiter variant of the ACDGV scheme is assumed
+    # the formulas for the public key and ciphertext sizes are given in Section 7.1
+    # of the ACDGV paper (https://arxiv.org/abs/2405.16539)
     pk_size_kB = k * m * ((m + ell1) * (m + ell2) - k * m) * log2(q) / (1000 * 8)
     cp_size_B = ((m + ell1) * (m + ell2) - k * m) * log2(q) / 8
 
