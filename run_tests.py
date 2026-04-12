@@ -20,6 +20,8 @@ def parse_args():
                         help="Base seed (default: %(default)s)")
     parser.add_argument("--iterations", type=int, default=ITERATIONS,
                         help="Iterations per parameter set (default: %(default)s)")
+    parser.add_argument("--max_m", type=int, default=None,
+                        help="Skip parameter sets with m > max_m")
     parser.add_argument(
         "--tests",
         nargs="+",
@@ -35,22 +37,32 @@ if __name__ == "__main__":
     BASE_SEED = args.seed
     ITERATIONS = args.iterations
     TESTS = set(args.tests)
+    MAX_M = args.max_m
 
     print(f"{ITERATIONS=}")
     print(f"{BASE_SEED=}")
+    print(f"{MAX_M=}")
     print(f"TESTS={sorted(TESTS)}")
 
     if "m1" in TESTS:
         print("\n" + "-"*40 + "(M1) Testing New Attack" + "-"*40)
+        params_list = [
+            p for p in parameters.get()
+            if p.group == "small" and is_prime(p.q)
+        ]
         seed_rng = random.Random(BASE_SEED)
-        for p in parameters.get():
-            if p.group != "small": continue
-            if not is_prime(p.q): continue
+        all_seeds = [seed_rng.randint(0, 2**31 - 1) for _ in range(len(params_list) * ITERATIONS)]
+        seed_idx = 0
+        for p in params_list:
             n = getattr(p, "n", p.m)
             for iteration in range(ITERATIONS):
+                seed = all_seeds[seed_idx]
+                seed_idx += 1
+                if MAX_M is not None and p.m > MAX_M:
+                    continue
                 pp = dict(q=p.q, m=p.m, n=n, k=p.k, ell1=p.ell1, ell2=p.ell2,
                           code_family="GABIDULIN",
-                          seed=seed_rng.randint(0, 2**31 - 1))
+                          seed=seed)
                 print(pp, end=' ')
                 start = time.perf_counter()
                 success = m1_new_attack.run(**pp)
@@ -62,16 +74,22 @@ if __name__ == "__main__":
 
     if "m2" in TESTS:
         print("-"*40 + "(M2) Testing Assumption 1" + "-"*40)
+        params_list = [p for p in parameters.get() if is_prime(p.q)]
         seed_rng = random.Random(BASE_SEED)
-        for p in parameters.get():
-            if not is_prime(p.q): continue
+        all_seeds = [seed_rng.randint(0, 2**31 - 1) for _ in range(len(params_list) * ITERATIONS)]
+        seed_idx = 0
+        for p in params_list:
             n = getattr(p, "n", p.m)
             b1, b2 = get_b1_b2(k=p.k, m=p.m, n=n, ell1=p.ell1, ell2=p.ell2)
             for iteration in range(ITERATIONS):
+                seed = all_seeds[seed_idx]
+                seed_idx += 1
+                if MAX_M is not None and p.m > MAX_M:
+                    continue
                 pp = dict(q=p.q, m=p.m, n=n, k=p.k, ell1=p.ell1, b1=b1, b2=b2,
                           code_family="GABIDULIN",
                           optimize=(p.group != "small"),
-                          seed=seed_rng.randint(0, 2**31 - 1))
+                          seed=seed)
                 print(pp, end=' ')
                 start = time.perf_counter()
                 success = m2_assumption1.run(**pp)
@@ -82,15 +100,21 @@ if __name__ == "__main__":
 
     if "m3" in TESTS:
         print("\n" + "-"*40 + "(M3) Testing Assumption 2" + "-"*40)
+        params_list = [p for p in parameters.get() if is_prime(p.q)]
         seed_rng = random.Random(BASE_SEED)
-        for p in parameters.get():
-            if not is_prime(p.q): continue
+        all_seeds = [seed_rng.randint(0, 2**31 - 1) for _ in range(len(params_list) * ITERATIONS)]
+        seed_idx = 0
+        for p in params_list:
             n = getattr(p, "n", p.m)
             for iteration in range(ITERATIONS):
+                seed = all_seeds[seed_idx]
+                seed_idx += 1
+                if MAX_M is not None and p.m > MAX_M:
+                    continue
                 pp = dict(q=p.q, m=p.m, n=n, k=p.k, ell1=p.ell1,
                           code_family="GABIDULIN",
                           optimize=(p.group != "small"),
-                          seed=seed_rng.randint(0, 2**31 - 1))
+                          seed=seed)
                 print(pp, end=' ')
                 start = time.perf_counter()
                 success = m3_assumption2.run(**pp)

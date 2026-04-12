@@ -51,9 +51,12 @@ uv run python run_tests_parallel.py --workers 4 # same as above but use 4 cores
 uv run python compute_complexity.py # compute complexity expressions (Table 3)
 
 # The full version of the paper states that we get a 100% success rate for the two assumptions with seed=5 and iterations=50
-# This can be tested with (may take many hours depending on machine):
+# This can be tested with (may take many many hours or days depending on machine):
 uv run python run_tests_parallel.py --workers -1
 printf "success rate: %s/%s\n" $(grep -o "success=True" benchmark*.txt | wc -l) $(grep -o "success=" benchmark*.txt | wc -l)
+# Note: the largest parameter set with m=79 takes a very long time to test
+# Use --max_m=X to test only parameter sets with m <= X. Hence, to exclude the m=79 set, run
+uv run python run_tests_parallel.py --workers -1 --max_m=78
 ```
 
 ## License

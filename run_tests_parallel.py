@@ -62,6 +62,8 @@ def parse_args():
     parser.add_argument("--seed", type=int, default=5, help="Base seed (default: %(default)s)")
     parser.add_argument("--iterations", type=int, default=50,
                         help="Iterations per parameter set (default: %(default)s)")
+    parser.add_argument("--max_m", type=int, default=None,
+                        help="Skip parameter sets with m > max_m")
     parser.add_argument("--workers", type=int, default=0,
                         help="Number of worker processes: \
                         -1=all cores, 0=half cores (default), N=exact.")
@@ -79,6 +81,7 @@ if __name__ == "__main__":
     args = parse_args()
     BASE_SEED = args.seed
     ITERATIONS = args.iterations
+    MAX_M = args.max_m
     tests = set(args.tests)
 
     total_cores = os.cpu_count() or 1
@@ -104,6 +107,7 @@ if __name__ == "__main__":
     print(f"Using {workers} out of {total_cores} parallel workers")
     print(f"Base seed: {BASE_SEED}")
     print(f"Iterations per parameter set: {ITERATIONS}")
+    print(f"max_m: {MAX_M}")
     print(f"Tests: {sorted(tests)}")
     if "m2" in tests:
         print(f"Output file (m2): {outputfile_m2}")
@@ -121,7 +125,10 @@ if __name__ == "__main__":
     all_seeds = [seed_rng.randint(0, 2**31 - 1) for _ in range(total_tests)]
 
     # Optional: add a short header to outputs
-    header = f"# base_seed={BASE_SEED}; iterations={ITERATIONS}; workers={workers}; timestamp={timestamp_str}"
+    header = (
+        f"# base_seed={BASE_SEED}; iterations={ITERATIONS}; workers={workers}; "
+        f"max_m={MAX_M}; timestamp={timestamp_str}"
+    )
     if "m2" in tests:
         with open(outputfile_m2, "a", encoding="utf-8") as f:
             f.write(header + "\n")
@@ -137,8 +144,11 @@ if __name__ == "__main__":
         seed_idx = 0
         for p in params_list:
             for i in range(ITERATIONS):
-                m2_args.append((p, i, all_seeds[seed_idx]))
+                seed = all_seeds[seed_idx]
                 seed_idx += 1
+                if MAX_M is not None and p.m > MAX_M:
+                    continue
+                m2_args.append((p, i, seed))
         print(f"Total m2 test runs: {len(m2_args)}")
         start_time = time.perf_counter()
         with Pool(workers) as pool:
@@ -157,8 +167,11 @@ if __name__ == "__main__":
         seed_idx = 0  # reset so m3 uses the same seed stream as m2
         for p in params_list:
             for i in range(ITERATIONS):
-                m3_args.append((p, i, all_seeds[seed_idx]))
+                seed = all_seeds[seed_idx]
                 seed_idx += 1
+                if MAX_M is not None and p.m > MAX_M:
+                    continue
+                m3_args.append((p, i, seed))
         print(f"Total m3 test runs: {len(m3_args)}")
         start_time = time.perf_counter()
         with Pool(workers) as pool:
